@@ -1,0 +1,7 @@
+README.md
+setup.py
+JJ_measurements.egg-info/PKG-INFO
+JJ_measurements.egg-info/SOURCES.txt
+JJ_measurements.egg-info/dependency_links.txt
+JJ_measurements.egg-info/requires.txt
+JJ_measurements.egg-info/top_level.txt
