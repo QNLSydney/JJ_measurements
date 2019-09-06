@@ -6,11 +6,19 @@ def IV_up(station, meas):
 	stanford_gain_1 = 1e3
 	stanford_gain_2 = 1e3
 
+	print(f'Stanford Gain 1 ={stanford_gain_1}')
+	print(f'Stanford Gain 2 ={stanford_gain_2}')
+
+
+	int_time = 1
+
 	station.dmm1.volt()
-	station.dmm1.NPLC(1)
+	station.dmm1.NPLC(int_time)
 
 	station.dmm2.volt()
-	station.dmm2.NPLC(1)
+	station.dmm2.NPLC(int_time)
+
+	print(f'Integration time = {int_time*0.02} s')
 
 	station.yoko.output('off')
 	station.yoko.source_mode("VOLT")
@@ -21,11 +29,11 @@ def IV_up(station, meas):
 
 	meas.register_parameter(station.yoko.voltage)
 	meas.register_parameter(station.dmm2.volt)
-	meas.register_custom_parameter("Current")
+	meas.register_custom_parameter("Current", unit="A")
 	meas.register_parameter(station.dmm1.volt, setpoints=("Current",))
 
 
-	voltages =np.linspace(-50e-3,50e-3,101)
+	voltages =np.linspace(-200e-3,200e-3,201)
 
 	with meas.run() as datasaver:
 	    for v in voltages:
