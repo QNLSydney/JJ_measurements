@@ -9,7 +9,6 @@ def IV_up(station, meas):
 	print(f'Stanford Gain 1 ={stanford_gain_1}')
 	print(f'Stanford Gain 2 ={stanford_gain_2}')
 
-
 	int_time = 1
 
 	station.dmm1.volt()
@@ -32,14 +31,12 @@ def IV_up(station, meas):
 	meas.register_custom_parameter("Current", unit="A")
 	meas.register_parameter(station.dmm1.volt, setpoints=("Current",))
 
-
 	voltages =np.linspace(-200e-3,200e-3,201)
 
 	with meas.run() as datasaver:
 	    for v in voltages:
 	        station.yoko.voltage(v)
-
-	        
+			
 	        voltage_meas = station.dmm1.volt()/stanford_gain_1
 	        current_meas = station.dmm2.volt()/(1e4*stanford_gain_2)
 
