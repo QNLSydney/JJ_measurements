@@ -3,7 +3,7 @@ import numpy as np
 
 def IV_up(station, meas):
 
-	stanford_gain_1 = 1e3
+	stanford_gain_1 = 1e2
 	stanford_gain_2 = 1e3
 
 	print(f'Stanford Gain 1 ={stanford_gain_1}')
@@ -36,7 +36,7 @@ def IV_up(station, meas):
 	with meas.run() as datasaver:
 	    for v in voltages:
 	        station.yoko.voltage(v)
-			
+
 	        voltage_meas = station.dmm1.volt()/stanford_gain_1
 	        current_meas = station.dmm2.volt()/(1e4*stanford_gain_2)
 
