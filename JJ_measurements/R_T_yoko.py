@@ -2,7 +2,7 @@
 import time 
 
 def RT_yoko(station, meas, ft):
-    stanford_gain_1 = 1e2
+    stanford_gain_1 = 1e3
     stanford_gain_2 = 1e3
 
     station.dmm1.NPLC(10)
@@ -25,19 +25,14 @@ def RT_yoko(station, meas, ft):
     
     j=0
 
-    voltage = 500.0e-3
+    voltage = 0.1e-3
 
     T = ft.MC_temp()
 
     with meas.run() as datasaver:
         
-        while T < 1:
-
-
-            if T<90:
-                T = ft.MC_temp()
-            else:
-                T = ft.Four_K_temp()    
+        while T > 4:
+            T = ft.Four_K_temp()    
                       
             
             station.yoko.voltage(voltage)

@@ -1,10 +1,10 @@
-# IV Ibias using a 1MOhm resistor
+# IV Ibias using a 1 MOhm resistor for current bias and 10kOhm to read the current
 
 import numpy as np
 
 def IV_up(station, meas):
 
-	stanford_gain_1 = 1e2
+	stanford_gain_1 = 1e3
 	stanford_gain_2 = 1e3
 
 	print(f'Stanford Gain 1 ={stanford_gain_1}')
@@ -32,7 +32,7 @@ def IV_up(station, meas):
 	meas.register_custom_parameter("Current", unit="A")
 	meas.register_parameter(station.dmm1.volt, setpoints=("Current",))
 
-	voltages =np.linspace(-200e-3,200e-3,201)
+	voltages =np.linspace(-0.5e-3,0.5e-3,201)
 
 	with meas.run() as datasaver:
 	    for v in voltages:
