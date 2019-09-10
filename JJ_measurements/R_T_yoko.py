@@ -37,9 +37,14 @@ class FridgeTemps(Instrument):
             raise RuntimeError("Unable to query fridge")
         temps = temps.json()
         return temps[param]
-
-ft = FridgeTemps("BlueFors_LD", 
+try:
+    T = ft.Four_K_temp()
+    print('Four K temp :', T)
+except NameError:
+    ft = FridgeTemps("BlueFors_LD", 
      "https://qphys1114.research.ext.sydney.edu.au/therm_flask/BlueFors_LD/data/?current")
+    print('Loading Temperature Data')
+
 
 def RT_yoko(station, meas, voltage, stanford_gain_V, stanford_gain_I):
 
@@ -50,7 +55,7 @@ def RT_yoko(station, meas, voltage, stanford_gain_V, stanford_gain_I):
     station.yoko.source_mode("VOLT")
     station.yoko.output('on')
 
-    station.yoko.voltage.step = 10e-3
+    station.yoko.voltage.step = 1e-6
     station.yoko.voltage.inter_delay = 0.0001
 
     meas.register_parameter(station.yoko.voltage)
