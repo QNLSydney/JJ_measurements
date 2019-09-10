@@ -1,9 +1,37 @@
 # Measure the Resistance R as a function of temperature
 import time 
 
-def RT_yoko(station, meas, ft):
-    stanford_gain_1 = 1e3
-    stanford_gain_2 = 1e3
+class FridgeTemps(MultiParameter):
+    def __init__(self, fridge, url):
+        self.url = url
+        
+        params = requests.get(url)
+        if params.status_code != 200:
+            raise RuntimeError("Unable to query fridge")
+        params = set(params.json().keys())
+        params.remove("Time")
+        params = tuple(params)
+        self.params = params
+        
+        super().__init__(
+                "{}_temps".format(fridge),
+                names=params,
+                shapes=tuple(() for _ in params),
+                units=tuple("K" for _ in params),
+                snapshot_get=False)
+        
+    def get_raw(self):
+        temps = requests.get(self.url)
+        if temps.status_code != 200:
+            raise RuntimeError("Unable to query fridge")
+        temps = temps.json()
+        temps = [temps[therm] for therm in self.params]
+        return tuple(temps)
+
+ft = FridgeTemps("BlueFors_LD", 
+     "https://qphys1114.research.ext.sydney.edu.au/therm_flask/BlueFors_LD/data/?current")
+
+def RT_yoko(station, meas, voltage, stanford_gain_V, stanford_gain_I):
 
     station.dmm1.NPLC(10)
     station.dmm2.NPLC(10)
@@ -25,8 +53,6 @@ def RT_yoko(station, meas, ft):
     
     j=0
 
-    voltage = 0.1e-3
-
     T = ft.MC_temp()
 
     with meas.run() as datasaver:
@@ -39,8 +65,8 @@ def RT_yoko(station, meas, ft):
             
             time.sleep(1)
 
-            volt_p = station.dmm1.volt()/stanford_gain_1
-            curr_p = station.dmm2.volt()/(1e4*stanford_gain_2) #10kOhm resistor for current meas.
+            volt_p = station.dmm1.volt()/stanford_gain_V
+            curr_p = station.dmm2.volt()/(1e4*stanford_gain_I) #10kOhm resistor for current meas.
             
             time.sleep(1)
             
