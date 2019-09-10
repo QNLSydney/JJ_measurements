@@ -32,8 +32,13 @@ def RT_yoko(station, meas, ft):
     with meas.run() as datasaver:
         
         while T < 1:
-            
-            T = ft.MC_temp()
+
+
+            if T<90:
+                T = ft.MC_temp()
+            else:
+                T = ft.Four_K_temp()    
+                      
             
             station.yoko.voltage(voltage)
             
@@ -63,7 +68,7 @@ def RT_yoko(station, meas, ft):
                                 ("Current", I_av))
             
             print((T,R_av))
-            time.sleep(1)
+            time.sleep(150)
             j = j+1
             
     station.yoko.voltage(0)
