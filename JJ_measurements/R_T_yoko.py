@@ -1,7 +1,47 @@
 # Measure the Resistance R as a function of temperature
 import time 
+import requests
+from functools import partial
+import time
+import numpy as np
 
-def RT_yoko(station, meas, ft, voltage, stanford_gain_V, stanford_gain_I):
+from qcodes import Instrument
+from qcodes.dataset.measurements import Measurement
+
+import qcodes_measurements as qcm
+from qcodes_measurements.tools.measure import _run_functions, _get_window
+
+class FridgeTemps(Instrument):
+    def __init__(self, fridge, url):
+        super().__init__(fridge)
+        self.url = url
+        
+        params = requests.get(url)
+        if params.status_code != 200:
+            raise RuntimeError("Unable to query fridge")
+        params = set(params.json().keys())
+        params.remove("Time")
+        params = tuple(params)
+        self.params = params
+        
+        for param in params:
+            self.add_parameter(f"{param}_temp",
+                               unit="K",
+                               label=f"{param}",
+                               get_cmd=partial(self.get_param, param),
+                               snapshot_get=False)
+        
+    def get_param(self, param):
+        temps = requests.get(self.url)
+        if temps.status_code != 200:
+            raise RuntimeError("Unable to query fridge")
+        temps = temps.json()
+        return temps[param]
+
+ft = FridgeTemps("BlueFors_LD", 
+     "https://qphys1114.research.ext.sydney.edu.au/therm_flask/BlueFors_LD/data/?current")
+
+def RT_yoko(station, meas, voltage, stanford_gain_V, stanford_gain_I):
 
     station.dmm1.NPLC(10)
     station.dmm2.NPLC(10)
@@ -23,14 +63,13 @@ def RT_yoko(station, meas, ft, voltage, stanford_gain_V, stanford_gain_I):
     
     j=0
 
-    T = ft.MC_temp()
+    T = ft.Four_K_temp()
 
     with meas.run() as datasaver:
         
-        while T > 4:
+        while T > 4.0:
             T = ft.Four_K_temp()    
-                      
-            
+
             station.yoko.voltage(voltage)
             
             time.sleep(1)
@@ -44,8 +83,8 @@ def RT_yoko(station, meas, ft, voltage, stanford_gain_V, stanford_gain_I):
             
             time.sleep(1)
             
-            volt_m = station.dmm1.volt()/stanford_gain_1
-            curr_m = station.dmm2.volt()/(1e4*stanford_gain_2)
+            volt_m = station.dmm1.volt()/stanford_gain_V
+            curr_m = station.dmm2.volt()/(1e4*stanford_gain_I)
             
             V_av = (volt_p - volt_m)/2
             I_av = (curr_p - curr_m)/2
@@ -59,7 +98,7 @@ def RT_yoko(station, meas, ft, voltage, stanford_gain_V, stanford_gain_I):
                                 ("Current", I_av))
             
             print((T,R_av))
-            time.sleep(150)
+            time.sleep(300)
             j = j+1
             
     station.yoko.voltage(0)
