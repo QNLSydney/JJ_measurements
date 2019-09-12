@@ -9,7 +9,7 @@ def IV_up(station, meas, voltages, stanford_gain_V, stanford_gain_I):
 
 	print(f'Stanford Gain V ={stanford_gain_V}')
 	print(f'Stanford Gain I ={stanford_gain_I}')
-	print(f'Voltage Max V_max = {voltages[len(voltages)]}')
+	print(f'Voltage Max V_max = {voltages[-1]}')
 
 	int_time = 1 #Integration time of the dmm's
 
@@ -46,5 +46,7 @@ def IV_up(station, meas, voltages, stanford_gain_V, stanford_gain_I):
 	                            (station.dmm2.volt,station.dmm2.volt()),
 	                            ("Current",current_meas),
 	                            (station.dmm1.volt,voltage_meas))
+        ID_exp = datasaver.run_id
 
 	station.yoko.voltage(0)
+    plot_by_id(ID_exp)

@@ -4,12 +4,12 @@ import numpy as np
 
 def IV_up(station, meas, voltages, stanford_gain_V, stanford_gain_I):
 
-	R_polar = 30e3 #Value of the resistance used to induce a current
+	R_polar = 1e6 #Value of the resistance used to induce a current
 	R_I = 1e4 #The value of the resistor used to measure the current
 
 	print(f'Stanford Gain V ={stanford_gain_V}')
 	print(f'Stanford Gain I ={stanford_gain_I}')
-	print(f'Current Max I_max = {voltages[len(voltages)]/R_polar}')
+	print(f'Current Max I_max = {voltages[-1]/R_polar}')
 
 	int_time = 1 #Integration time of the dmm's
 
@@ -21,8 +21,8 @@ def IV_up(station, meas, voltages, stanford_gain_V, stanford_gain_I):
 
 	print(f'Integration time = {int_time*0.02} s')
 
-	station.yoko.output('off')
-	station.yoko.source_mode("VOLT")
+	station.yoko.output('off') 
+	station.yoko.source_mode("VOLT") 
 	station.yoko.output('on')
 
 	station.yoko.voltage.step = 5e-3
@@ -46,5 +46,7 @@ def IV_up(station, meas, voltages, stanford_gain_V, stanford_gain_I):
 	                            (station.dmm2.volt,station.dmm2.volt()),
 	                            ("Current",current_meas),
 	                            (station.dmm1.volt,voltage_meas))
+		ID_exp = datasaver.run_id
 
 	station.yoko.voltage(0)
+	plot_by_id(ID_exp)

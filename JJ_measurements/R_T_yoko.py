@@ -46,7 +46,7 @@ except NameError:
     print('Loading Temperature Data')
 
 
-def RT_yoko(station, meas, voltage, stanford_gain_V, stanford_gain_I):
+def RT_HT(station, meas, voltage, stanford_gain_V, stanford_gain_I):
 
     station.dmm1.NPLC(10)
     station.dmm2.NPLC(10)
@@ -104,6 +104,69 @@ def RT_yoko(station, meas, voltage, stanford_gain_V, stanford_gain_I):
             
             print((T,R_av))
             time.sleep(300)
+            j = j+1
+            
+    station.yoko.voltage(0)
+
+def RT_LT(station, meas, voltage, stanford_gain_V, stanford_gain_I):
+    R_I = 1e4
+
+    station.dmm1.NPLC(10)
+    station.dmm2.NPLC(10)
+
+    station.yoko.output('off')
+    station.yoko.source_mode("VOLT")
+    station.yoko.output('on')
+
+    station.yoko.voltage.step = 1e-6
+    station.yoko.voltage.inter_delay = 0.0001
+
+    meas.register_parameter(station.yoko.voltage)
+    meas.register_custom_parameter("Temperature", unit = "K")
+    meas.register_custom_parameter("Counter")
+    meas.register_custom_parameter("Current", unit = "A")
+    meas.register_parameter(station.dmm1.volt)
+    meas.register_parameter(station.dmm2.volt)
+    meas.register_custom_parameter("Resistance", unit = "Ohms", setpoints=("Temperature",))
+    
+    j=0
+
+    T = ft.MC_temp()
+
+    with meas.run() as datasaver:
+        
+        while T > 0.008:
+            T = ft.MC_temp()    
+
+            station.yoko.voltage(voltage)
+            
+            time.sleep(1)
+
+            volt_p = station.dmm1.volt()/stanford_gain_V
+            curr_p = station.dmm2.volt()/(R_I*stanford_gain_I) #10kOhm resistor for current meas.
+            
+            time.sleep(1)
+            
+            station.yoko.voltage(-voltage)
+            
+            time.sleep(1)
+            
+            volt_m = station.dmm1.volt()/stanford_gain_V
+            curr_m = station.dmm2.volt()/(1e4*stanford_gain_I)
+            
+            V_av = (volt_p - volt_m)/2
+            I_av = (curr_p - curr_m)/2
+            R_av = V_av/I_av
+
+            datasaver.add_result((station.yoko.voltage, voltage),
+                                ("Temperature", T),
+                                ("Counter", j),
+                                 ("Resistance", R_av),
+                                (station.dmm1.volt,V_av),
+                                ("Current", I_av))
+            
+            print((T,R_av))
+            time.sleep(1)
             j = j+1
             
     station.yoko.voltage(0)
