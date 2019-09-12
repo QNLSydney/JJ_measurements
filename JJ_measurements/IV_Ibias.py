@@ -2,15 +2,16 @@
 
 import numpy as np
 
-def IV_up(station, meas):
+def IV_up(station, meas, voltages, stanford_gain_V, stanford_gain_I):
 
-	stanford_gain_1 = 1e3
-	stanford_gain_2 = 1e3
+	R_polar = 30e3 #Value of the resistance used to induce a current
+	R_I = 1e4 #The value of the resistor used to measure the current
 
-	print(f'Stanford Gain 1 ={stanford_gain_1}')
-	print(f'Stanford Gain 2 ={stanford_gain_2}')
+	print(f'Stanford Gain V ={stanford_gain_V}')
+	print(f'Stanford Gain I ={stanford_gain_I}')
+	print(f'Current Max I_max = {voltages[len(voltages)]/R_polar}')
 
-	int_time = 1
+	int_time = 1 #Integration time of the dmm's
 
 	station.dmm1.volt()
 	station.dmm1.NPLC(int_time)
@@ -32,14 +33,14 @@ def IV_up(station, meas):
 	meas.register_custom_parameter("Current", unit="A")
 	meas.register_parameter(station.dmm1.volt, setpoints=("Current",))
 
-	voltages =np.linspace(-0.5e-3,0.5e-3,201)
-
 	with meas.run() as datasaver:
+
 	    for v in voltages:
+
 	        station.yoko.voltage(v)
 
-	        voltage_meas = station.dmm1.volt()/stanford_gain_1
-	        current_meas = station.dmm2.volt()/(1e4*stanford_gain_2)
+	        voltage_meas = station.dmm1.volt()/stanford_gain_V
+	        current_meas = station.dmm2.volt()/(R_I*stanford_gain_I)
 
 	        datasaver.add_result((station.yoko.voltage,v),
 	                            (station.dmm2.volt,station.dmm2.volt()),

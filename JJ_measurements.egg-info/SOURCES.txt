@@ -1,10 +1,9 @@
 README.md
 setup.py
 JJ_measurements/IV_Ibias.py
+JJ_measurements/IV_Vbias.py
 JJ_measurements/R_T_yoko.py
 JJ_measurements/__init__.py
-JJ_measurements/hello.py
-JJ_measurements/init.py
 JJ_measurements/temp_meas.py
 JJ_measurements.egg-info/PKG-INFO
 JJ_measurements.egg-info/SOURCES.txt
