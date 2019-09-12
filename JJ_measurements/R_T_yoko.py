@@ -46,7 +46,7 @@ except NameError:
     print('Loading Temperature Data')
 
 
-def RT_HT(station, meas, voltage, stanford_gain_V, stanford_gain_I):
+def RT_HT(station, voltage, stanford_gain_V, stanford_gain_I):
 
     station.dmm1.NPLC(10)
     station.dmm2.NPLC(10)
@@ -58,6 +58,8 @@ def RT_HT(station, meas, voltage, stanford_gain_V, stanford_gain_I):
     station.yoko.voltage.step = 1e-6
     station.yoko.voltage.inter_delay = 0.0001
 
+    meas = Measurement()
+
     meas.register_parameter(station.yoko.voltage)
     meas.register_custom_parameter("Temperature", unit = "K")
     meas.register_custom_parameter("Counter")
@@ -66,6 +68,23 @@ def RT_HT(station, meas, voltage, stanford_gain_V, stanford_gain_I):
     meas.register_parameter(station.dmm2.volt)
     meas.register_custom_parameter("Resistance", unit = "Ohms", setpoints=("Temperature",))
     
+    win = qcm.pyplot.PlotWindow(title="R(T)")
+    win.resize(750,500)
+
+    num_points = 0
+    array_size = 1
+    temp_array = np.full((1,), np.nan)
+    r_array = np.full((1,), np.nan)
+
+
+    plot1 = win.addPlot(title="RT from 300K to 4K")
+    plotdata = plot1.plot(setpoint_x=temp_array)
+
+    plot1.left_axis.label = "Resistance"
+    plot1.left_axis.units = "Ohms"
+    plot1.bot_axis.label = "Temperature"
+    plot1.bot_axis.units = "K"
+
     j=0
 
     T = ft.Four_K_temp()
@@ -101,14 +120,27 @@ def RT_HT(station, meas, voltage, stanford_gain_V, stanford_gain_I):
                                  ("Resistance", R_av),
                                 (station.dmm1.volt,V_av),
                                 ("Current", I_av))
+
+            temp_array[num_points] = T
+            r_array[num_points] = R_av
+            plotdata.xData = temp_array
+            plotdata.update(r_array)
+            num_points += 1
+
+            if num_points == array_size:
+                array_size *= 2
+                temp_array.resize(array_size)
+                temp_array[array_size//2:] = np.nan
+                r_array.resize(array_size)
+                r_array[array_size//2:] = np.nan
             
-            print((T,R_av))
+            #print((T,R_av))
             time.sleep(300)
             j = j+1
             
     station.yoko.voltage(0)
 
-def RT_LT(station, meas, voltage, stanford_gain_V, stanford_gain_I):
+def RT_LT(station, voltage, stanford_gain_V, stanford_gain_I):
     R_I = 1e4
 
     station.dmm1.NPLC(10)
@@ -121,6 +153,8 @@ def RT_LT(station, meas, voltage, stanford_gain_V, stanford_gain_I):
     station.yoko.voltage.step = 1e-6
     station.yoko.voltage.inter_delay = 0.0001
 
+    meas = Measurement()
+
     meas.register_parameter(station.yoko.voltage)
     meas.register_custom_parameter("Temperature", unit = "K")
     meas.register_custom_parameter("Counter")
@@ -129,6 +163,23 @@ def RT_LT(station, meas, voltage, stanford_gain_V, stanford_gain_I):
     meas.register_parameter(station.dmm2.volt)
     meas.register_custom_parameter("Resistance", unit = "Ohms", setpoints=("Temperature",))
     
+    win = qcm.pyplot.PlotWindow(title="R(T)")
+    win.resize(750,500)
+
+    num_points = 0
+    array_size = 1
+    temp_array = np.full((1,), np.nan)
+    r_array = np.full((1,), np.nan)
+
+
+    plot1 = win.addPlot(title="RT from 4K to 8mK")
+    plotdata = plot1.plot(setpoint_x=temp_array)
+
+    plot1.left_axis.label = "Resistance"
+    plot1.left_axis.units = "Ohms"
+    plot1.bot_axis.label = "Temperature"
+    plot1.bot_axis.units = "K"
+
     j=0
 
     T = ft.MC_temp()
@@ -164,8 +215,22 @@ def RT_LT(station, meas, voltage, stanford_gain_V, stanford_gain_I):
                                  ("Resistance", R_av),
                                 (station.dmm1.volt,V_av),
                                 ("Current", I_av))
+
+            temp_array[num_points] = T
+            r_array[num_points] = R_av
+            plotdata.xData = temp_array
+            plotdata.update(r_array)
+            num_points += 1
+
+            if num_points == array_size:
+                array_size *= 2
+                temp_array.resize(array_size)
+                temp_array[array_size//2:] = np.nan
+                r_array.resize(array_size)
+                r_array[array_size//2:] = np.nan
             
-            print((T,R_av))
+            
+            #print((T,R_av))
             time.sleep(1)
             j = j+1
             
