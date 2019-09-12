@@ -1,8 +1,10 @@
 # IV Ibias using a 1 MOhm resistor for current bias and 10kOhm to read the current
 
 import numpy as np
+from qcodes.dataset.measurements import Measurement
+from qcodes.dataset.plotting import plot_by_id
 
-def IV_up(station, meas, voltages, stanford_gain_V, stanford_gain_I):
+def IV_up(station, voltages, stanford_gain_V, stanford_gain_I):
 
 	R_polar = 1e6 #Value of the resistance used to induce a current
 	R_I = 1e4 #The value of the resistor used to measure the current
@@ -28,6 +30,8 @@ def IV_up(station, meas, voltages, stanford_gain_V, stanford_gain_I):
 	station.yoko.voltage.step = 5e-3
 	station.yoko.voltage.inter_delay = 10e-3
 
+	meas = Measurement()
+
 	meas.register_parameter(station.yoko.voltage)
 	meas.register_parameter(station.dmm2.volt)
 	meas.register_custom_parameter("Current", unit="A")
@@ -46,7 +50,6 @@ def IV_up(station, meas, voltages, stanford_gain_V, stanford_gain_I):
 	                            (station.dmm2.volt,station.dmm2.volt()),
 	                            ("Current",current_meas),
 	                            (station.dmm1.volt,voltage_meas))
-		ID_exp = datasaver.run_id
 
 	station.yoko.voltage(0)
 	plot_by_id(ID_exp)
