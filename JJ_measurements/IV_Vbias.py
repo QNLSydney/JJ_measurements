@@ -60,7 +60,7 @@ def IV_up_ithaco(station, voltages, stanford_gain_V, ithaco_gain_I):
     R_I = 1e4 #The value of the resistor used to measure the current
 
     print(f'Stanford Gain V ={stanford_gain_V}')
-    print(f'Ithaco Gain I ={Ithaco_gain_I}')
+    print(f'Ithaco Gain I ={ithaco_gain_I}')
     print(f'Voltage Max V_max = {voltages[-1]}')
 
     int_time = 1 #Integration time of the dmm's
