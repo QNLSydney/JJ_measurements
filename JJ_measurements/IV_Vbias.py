@@ -94,7 +94,7 @@ def IV_up_ithaco(station, voltages, stanford_gain_V, ithaco_gain_I):
             station.yoko.voltage(v)
 
             voltage_meas = station.dmm1.volt()/stanford_gain_V
-            current_meas = station.dmm2.volt()/ithaco_gain_I
+            current_meas = -1*station.dmm2.volt()/ithaco_gain_I
 
             datasaver.add_result((station.yoko.voltage,v),
                                 (station.dmm2.volt,station.dmm2.volt()),
