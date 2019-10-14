@@ -9,7 +9,7 @@ def IV_up(station, voltages, stanford_gain_V, stanford_gain_I):
 	now = datetime.now()
 	# dd/mm/YY H:M:S
 	dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
-	print("date and time =", dt_string)	
+	print(dt_string)	
 
 	R_polar = 10e6 #Value of the resistance used to induce a current
 	R_I = 1e4 #The value of the resistor used to measure the current
@@ -32,8 +32,8 @@ def IV_up(station, voltages, stanford_gain_V, stanford_gain_I):
 	station.yoko.source_mode("VOLT") 
 	station.yoko.output('on')
 
-	station.yoko.voltage.step = 1e-4
-	station.yoko.voltage.inter_delay = 10e-3
+	station.yoko.voltage.step = 1e-5
+	station.yoko.voltage.inter_delay = 1e-3
 
 	meas = Measurement()
 

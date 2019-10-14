@@ -4,8 +4,14 @@
 import numpy as np
 from qcodes.dataset.measurements import Measurement
 from qcodes.dataset.plotting import plot_by_id
+from datetime import datetime
 
 def IV_up(station, voltages, stanford_gain_V, stanford_gain_I):
+
+    now = datetime.now()
+    # dd/mm/YY H:M:S
+    dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+    print(dt_string)   
 
     R_I = 1e4 #The value of the resistor used to measure the current
 
@@ -56,6 +62,12 @@ def IV_up(station, voltages, stanford_gain_V, stanford_gain_I):
     plot_by_id(ID_exp)
 
 def IV_up_ithaco(station, voltages, stanford_gain_V, ithaco_gain_I):
+    
+    now = datetime.now()
+    # dd/mm/YY H:M:S
+    dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+    print(dt_string)   
+
 
     R_I = 1e4 #The value of the resistor used to measure the current
 

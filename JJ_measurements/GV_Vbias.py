@@ -5,8 +5,15 @@ import numpy as np
 import time
 from qcodes.dataset.measurements import Measurement
 from qcodes.dataset.plotting import plot_by_id
+from datetime import datetime
+
 
 def GV_up(station, voltages, amplitude, stanford_gain_V):
+
+    now = datetime.now()
+    # dd/mm/YY H:M:S
+    dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+    print(dt_string)    
 
     station.lockin_1.amplitude(amplitude)
 
@@ -26,9 +33,9 @@ def GV_up(station, voltages, amplitude, stanford_gain_V):
 
     print(f'Integration time = {int_time*0.02} s')
 
-    station.yoko.output('off')
-    station.yoko.source_mode("VOLT")
-    station.yoko.output('on')
+    #station.yoko.output('off')
+    #station.yoko.source_mode("VOLT")
+    #station.yoko.output('on')
 
     station.yoko.voltage.step = 5e-3
     station.yoko.voltage.inter_delay = 10e-3
