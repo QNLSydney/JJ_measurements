@@ -32,7 +32,7 @@ def IV_up(station, voltages, stanford_gain_V, stanford_gain_I):
 	station.yoko.source_mode("VOLT") 
 	station.yoko.output('on')
 
-	station.yoko.voltage.step = 1e-5
+	station.yoko.voltage.step = 1e-3
 	station.yoko.voltage.inter_delay = 1e-3
 
 	meas = Measurement()

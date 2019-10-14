@@ -1,9 +1,10 @@
 import requests
-from qcodes import MultiParameter
+from functools import partial
+from qcodes import Instrument
 
-
-class FridgeTemps(MultiParameter):
+class FridgeTemps(Instrument):
     def __init__(self, fridge, url):
+        super().__init__(fridge)
         self.url = url
         
         params = requests.get(url)
@@ -14,20 +15,16 @@ class FridgeTemps(MultiParameter):
         params = tuple(params)
         self.params = params
         
-        super().__init__(
-                "{}_temps".format(fridge),
-                names=params,
-                shapes=tuple(() for _ in params),
-                units=tuple("K" for _ in params),
-                snapshot_get=False)
+        for param in params:
+            self.add_parameter(f"{param}_temp",
+                               unit="K",
+                               label=f"{param}",
+                               get_cmd=partial(self.get_param, param),
+                               snapshot_get=False)
         
-    def get_raw(self):
+    def get_param(self, param):
         temps = requests.get(self.url)
         if temps.status_code != 200:
             raise RuntimeError("Unable to query fridge")
         temps = temps.json()
-        temps = [temps[therm] for therm in self.params]
-        return tuple(temps)
-
-ft = FridgeTemps("BlueFors_LD", 
-     "https://qphys1114.research.ext.sydney.edu.au/therm_flask/BlueFors_LD/data/?current")
+        return temps[param]
