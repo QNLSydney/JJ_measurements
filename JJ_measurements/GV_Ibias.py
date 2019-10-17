@@ -19,10 +19,6 @@ def GV_up(station, voltages, amplitude, stanford_gain_V_ac, stanford_gain_V, sta
     dt_string = now.strftime("%d/%m/%Y %H:%M:%S")    # dd/mm/YY H:M:S
     print(dt_string)    
 
-    station.lockin_1.amplitude(amplitude)
-
-    time_constant = station.lockin_1.time_constant()
-
     print(f'Stanford Gain V_AC ={stanford_gain_V_ac}')
     print(f'Stanford Gain I_DC ={stanford_gain_I}')
     print(f'Stanford Gain V_DC ={stanford_gain_V}')
@@ -38,7 +34,7 @@ def GV_up(station, voltages, amplitude, stanford_gain_V_ac, stanford_gain_V, sta
 
     print(f'Integration time DC = {int_time*0.02} s')
 
-    time_constant = 0.3
+    time_constant = station.lockin_1.time_constant()
 
     print(f'Integration time lockins {lockin_1.time_constant()}')
 
@@ -59,24 +55,25 @@ def GV_up(station, voltages, amplitude, stanford_gain_V_ac, stanford_gain_V, sta
     meas.register_parameter(station.lockin_2.Y)
     meas.register_parameter(station.lockin_1.X)
     meas.register_parameter(station.lockin_2.X)
-    meas.register_custom_parameter("R_ac", unit="S",setpoints=(station.dmm1.volt,))
+    meas.register_custom_parameter("R_ac", unit="S",setpoints=(station.lockin_2.sine_outdc,))
     
+    station.lockin_2.amplitude(amplitude)
 
     with meas.run() as datasaver:
 
         for v in voltages:
 
-            station.lockin_2.(v)
+            station.lockin_2.sine_outdc(v)
 
             v_dc = station.dmm1.volt()/stanford_gain_V
             v_i_dc = station.dmm2.volt()/stanford_gain_I
 
             time.sleep(5*time_constant)
 
-            voltage_X_AC = station.lockin_1.X()
+            voltage_X_AC = station.lockin_1.X()/stanford_gain_V_ac
             current_X_AC = station.lockin_2.X()
 
-            voltage_Y_AC = station.lockin_1.Y()
+            voltage_Y_AC = station.lockin_1.Y()/stanford_gain_V_ac
             current_Y_AC = station.lockin_2.Y()
 
             R_ac = voltage_X_AC/current_X_AC
@@ -84,6 +81,7 @@ def GV_up(station, voltages, amplitude, stanford_gain_V_ac, stanford_gain_V, sta
             datasaver.add_result(("R_ac",R_ac),
                                 (station.dmm1.volt, v_dc),
                                 (station.dmm2.volt, v_i_dc),
+                                (station.lockin_2.amplitude, amplitude),
                                 (station.lockin_2.sine_outdc, v),
                                 (station.lockin_2.Y,current_Y_AC),
                                 (station.lockin_1.Y,voltage_Y_AC),
