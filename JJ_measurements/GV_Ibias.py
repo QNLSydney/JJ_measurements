@@ -219,8 +219,10 @@ def GV_2D(station, voltages, v_gates, amplitude, stanford_gain_V_ac, stanford_ga
     win = qcm.pyplot.PlotWindow(title="JJ dev. A")
     win.resize(500,750)
 
+    currents = voltages*1e3 
+
     plot1 = win.addPlot(title = "R_ac(I_dc, V_g)")
-    plot1.plot(setpoint_x = voltages, setpoint_y = v_gates)
+    plot1.plot(setpoint_x = currents, setpoint_y = v_gates)
     plot1.left_axis.label = "V_g"
     plot1.left_axis.units = "V"
     plot1.bot_axis.label = "I_dc"
