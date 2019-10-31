@@ -1,4 +1,5 @@
 # GV Vbias
+# Alexis Jouan 13/10/2019
 # Reading AC current and AC voltage with two lockins
 
 import numpy as np

@@ -1,3 +1,5 @@
+# IV_Ibias
+# Alexis Jouan 05/09/2019
 # IV Ibias using a 1 MOhm resistor for current bias and 10kOhm to read the current
 
 import numpy as np

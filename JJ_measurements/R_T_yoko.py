@@ -1,4 +1,7 @@
+#RT_yoko
+# Alexis Jouan 05/09/2019
 # Measure the Resistance R as a function of temperature
+
 import time 
 import requests
 from functools import partial

@@ -1,4 +1,5 @@
 # IV Vbias
+#Alexis Jouan 14/10/2019
 # Using a 10kOhm resistor to read the current
 
 import numpy as np
@@ -62,7 +63,7 @@ def IV_up(station, voltages, stanford_gain_V, stanford_gain_I):
     plot_by_id(ID_exp)
 
 def IV_up_ithaco(station, voltages, stanford_gain_V, ithaco_gain_I):
-    
+
     now = datetime.now()
     # dd/mm/YY H:M:S
     dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
