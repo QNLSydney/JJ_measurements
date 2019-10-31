@@ -11,6 +11,8 @@ def Hall(V_polar, field_range_Y, stanford_gain_1, stanford_gain_2):
 
     R_polar = 1e6
 
+    print(f'I_polar = {V_polar/R_polar}')
+
     R_I = 1e4
 
     # dmm1 is voltage
@@ -22,13 +24,11 @@ def Hall(V_polar, field_range_Y, stanford_gain_1, stanford_gain_2):
     station.yoko.voltage.step = 1e-4
     station.yoko.voltage.inter_delay = 0.0001
 
-    field_range_Y = np.linspace(-0.1,0.1,21)
-
     meas = Measurement()
 
     meas.register_parameter(station.yoko.voltage)
     meas.register_parameter(station.mag.y_target)
-
+    meas.register_parameter(station.mag.y_measured)
     meas.register_parameter(station.dmm1.volt, setpoints = (station.mag.y_target,))
     meas.register_parameter(station.dmm2.volt, setpoints = (station.mag.y_target,))
     meas.register_custom_parameter("R_h", unit = "Ohms", setpoints = (station.mag.y_target,))

@@ -39,9 +39,10 @@ def G_up(station, v_gates, v_polar, amplitude, stanford_gain_V_ac):
     win.resize(600,400)
 
     plot = win.addPlot(title ="R_ac(V_g)")
-    plot.update_axes(station.mdac_8.ch01.voltage, "R_ac", param_x_setpoint = True)
+    plot.update_axes(station.mdac_8.ch01.voltage, station.lockin_1.X)
 
-    R_ac_all = np.zeros(len(v_gates))
+    R_ac_all = np.full(len(v_gates), np.nan)
+
 
     #Print the main lockin settings
     print(f'Stanford Gain V_AC ={stanford_gain_V_ac}')
@@ -77,6 +78,8 @@ def G_up(station, v_gates, v_polar, amplitude, stanford_gain_V_ac):
             station.mdac_8.ch02.block()
             station.mdac_8.ch03.block()
 
+            print(v_g)
+
             time.sleep(5*time_constant)
 
             voltage_X_AC = station.lockin_1.X()/stanford_gain_V_ac
@@ -87,14 +90,15 @@ def G_up(station, v_gates, v_polar, amplitude, stanford_gain_V_ac):
 
             R_ac = voltage_X_AC/current_X_AC
 
-            R_ac_all
+            R_ac_all[i] = R_ac
 
-            trace = plot.plot(setpoint_x = v_gates, pen = (255, 0, 0), name = "R_ac")
+            trace = plot.plot(setpoint_x = v_gates, pen = (0, 0, 255), name = "R_ac")
             trace.update(R_ac_all)
 
             datasaver.add_result(("R_ac",R_ac),
                                 (station.lockin_2.amplitude, amplitude),
-                                (station.lockin_2.sine_outdc, v),
+                                (station.lockin_2.sine_outdc, v_polar),
+                                (station.mdac_8.ch01.voltage, v_g),
                                 (station.lockin_2.Y,current_Y_AC),
                                 (station.lockin_1.Y,voltage_Y_AC),
                                 (station.lockin_2.X,current_X_AC),
@@ -105,5 +109,7 @@ def G_up(station, v_gates, v_polar, amplitude, stanford_gain_V_ac):
 
     station.lockin_2.sine_outdc(0)
     station.lockin_2.amplitude(0)
+
+    win.export('figures/Rac_Gate_sweep_1D_ID_exp_'+str(ID_exp)+'.png')
 
     plot_by_id(ID_exp)
