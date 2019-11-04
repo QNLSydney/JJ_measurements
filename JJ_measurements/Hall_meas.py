@@ -141,10 +141,13 @@ def Hall_gate(station, v_gates, V_polar, field_range_Y, stanford_gain_1, stanfor
             print(l_y)
 
             for v_g in v_gates:
-                
+
                 station.mdac_8.ch01.ramp(v_g, 0.01)
-                station.mdac_8.ch01.block()
+                while abs(station.mdac_8.ch01.voltage()-v_g)>0.001:
+                    time.sleep(2)
+                time.sleep(2)
                 print(f'V_g = {v_g} V')
+
            
                 station.yoko.voltage(-V_polar)
 
@@ -176,10 +179,10 @@ def Hall_gate(station, v_gates, V_polar, field_range_Y, stanford_gain_1, stanfor
                 print(R_av)
                 
                 datasaver.add_result((station.mdac_8.ch01.voltage, v_g),
-                                     (station.yoko.voltage, station.yoko.voltage()),
-                                     (station.dmm2.volt, station.dmm2.volt()),
-                                     (station.dmm1.volt, station.dmm1.volt()),
-                                     (station.dmm3.volt, station.dmm3.volt()),
+                                     (station.yoko.voltage, V_polar),
+                                     (station.dmm2.volt, curr_p),
+                                     (station.dmm1.volt, V_h_av),
+                                     (station.dmm3.volt, V_av),
                                      (station.mag.y_measured, l_y),
                                      (station.mag.y_target, b),
                                      ("R_h", R_h_av),
