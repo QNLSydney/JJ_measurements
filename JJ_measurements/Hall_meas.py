@@ -127,25 +127,25 @@ def Hall_gate(station, v_gates, V_polar, field_range_Y, stanford_gain_1, stanfor
 
     with meas.run() as datasaver:
 
-        for v_g in v_gates:
+        for b in field_range_Y:
 
-            station.mdac_8.ch01.ramp(v_g, 0.01)
-            station.mdac_8.ch01.block()
-            print(f'V_g = {v_g} V')
+            station.mag.y_target(b)
+            station.mag.ramp('simul')
+
+            while abs(station.mag.y_measured()-b)>0.001:
+                time.sleep(2)
+            time.sleep(5)
+
+            l_y = station.mag.y_measured()
+
+            print(l_y)
+
+            for v_g in v_gates:
+                
+                station.mdac_8.ch01.ramp(v_g, 0.01)
+                station.mdac_8.ch01.block()
+                print(f'V_g = {v_g} V')
            
-            for b in field_range_Y:
-
-                station.mag.y_target(b)
-                station.mag.ramp('simul')
-
-                while abs(station.mag.y_measured()-b)>0.001:
-                    time.sleep(2)
-                time.sleep(5)
-
-                l_y = station.mag.y_measured()
-
-                print(l_y)
-
                 station.yoko.voltage(-V_polar)
 
                 time.sleep(1)
