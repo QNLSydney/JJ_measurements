@@ -1,3 +1,19 @@
+# G_field_sweep
+# Alexis Jouan 07/11/2019
+# Lockin measurement of the resistance of the device as a function of magnetic field
+
+import numpy as np
+import time
+from qcodes.dataset.measurements import Measurement
+from qcodes.dataset.plotting import plot_by_id
+from datetime import datetime
+
+import qcodes_measurements as qcm
+from qcodes_measurements.tools.measure import _run_functions, _get_window
+
+# This first version applies a ramp on the oxford source 
+# and meaures the resistance with the lockin while ramping
+
 def G_up_B(station, field_max, v_polar, amplitude, stanford_gain_V_ac):
 
     #Before using this code change these values according to your own setup :
