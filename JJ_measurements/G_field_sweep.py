@@ -81,7 +81,7 @@ def G_up_B(station, field_max, v_polar, amplitude, stanford_gain_V_ac):
 
     with meas.run() as datasaver:
 
-        station.mag.y_target(b)
+        station.mag.y_target(field_max)
         station.mag.ramp('simul')
 
         while abs(station.mag.y_measured()-field_max)>0.001:
@@ -199,7 +199,7 @@ def G_up_yoko(station, currents, v_polar, amplitude, stanford_gain_V_ac):
     station.yoko.source_mode("CURR") 
     station.yoko.output('on')
 
-    station.yoko.current.step = 1e-8
+    station.yoko.current.step = 1e-6
     station.yoko.current.inter_delay = 1e-3
 
     with meas.run() as datasaver:
