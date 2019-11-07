@@ -467,4 +467,4 @@ def GV_B(station, voltages, field_rang_Y, amplitude, stanford_gain_V_ac, stanfor
 
     station.lockin_2.sine_outdc(0)
     plot_by_id(ID_exp)
-    win.export('figures/Gac_2D_plot_ID_exp_'+str(ID_exp)+'.png')
+    win.export('figures/Gac_B_plot_ID_exp_'+str(ID_exp)+'.png')
