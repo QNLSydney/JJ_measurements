@@ -117,7 +117,7 @@ def G_up(station, v_gates, v_polar, amplitude, stanford_gain_V_ac):
 
 
 def G_up_B(station, field_max, v_polar, amplitude, stanford_gain_V_ac):
-    
+
     #Before using this code change these values according to your own setup :
     
     R_polar = 1e6 #value of the polarization resistor
@@ -200,7 +200,7 @@ def G_up_B(station, field_max, v_polar, amplitude, stanford_gain_V_ac):
 
             R_ac = voltage_X_AC/current_X_AC
 
-            datasaver.add_result(("R_ac",R_ac),
+            datasaver.add_result(("R_ac", R_ac),
                                 (station.lockin_2.amplitude, amplitude),
                                 (station.lockin_2.sine_outdc, v_polar),
                                 (station.mag.y_measured, b_y),
@@ -226,7 +226,6 @@ def G_up_B(station, field_max, v_polar, amplitude, stanford_gain_V_ac):
         ID_exp = datasaver.run_id
 
     station.lockin_2.sine_outdc(0)
-    station.lockin_2.amplitude(0)
 
     win.export('figures/Rac_Field_sweep_1D_ID_exp_'+str(ID_exp)+'.png')
 
