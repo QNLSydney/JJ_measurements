@@ -90,7 +90,7 @@ def IV_up_ithaco(station, voltages, stanford_gain_V, ithaco_gain_I):
     station.yoko.source_mode("VOLT")
     station.yoko.output('on')
 
-    station.yoko.voltage.step = 5e-3
+    station.yoko.voltage.step = 0.1e-6
     station.yoko.voltage.inter_delay = 10e-3
 
     meas = Measurement()

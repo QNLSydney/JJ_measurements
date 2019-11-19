@@ -500,8 +500,9 @@ def GV_B_yoko(station, voltages, currents_B, amplitude, stanford_gain_V_ac, stan
     station.yoko.source_mode("CURR")
     station.yoko.output('on')
 
-    #station.yoko.voltage.step = 5e-3
-    #station.yoko.voltage.inter_delay = 10e-3
+    station.yoko.current.step = 1e-6
+    station.yoko.current.inter_delay = 1e-3
+
 
     meas = Measurement()
 
@@ -530,9 +531,7 @@ def GV_B_yoko(station, voltages, currents_B, amplitude, stanford_gain_V_ac, stan
 
     print(f'Filter lockin 2 : {station.lockin_2.filter_slope()} dB roll off')
     print(f'Sensitivity lockin 2 : {station.lockin_2.sensitivity()} A')
-
-    station.yoko.current.step = 1e-6
-    station.yoko.current.inter_delay = 1e-3
+    
    
     #Preparing the measurement :
     

@@ -11,7 +11,104 @@ from datetime import datetime
 import qcodes_measurements as qcm
 from qcodes_measurements.tools.measure import _run_functions, _get_window
 
-def GV_up(station, voltages, amplitude, stanford_gain_V_ac, stanford_gain_I, stanford_gain_V):
+def GV_yoko_up(station, voltages, amplitude, stanford_gain_V_ac, stanford_gain_I_ac):
+
+    R_I = 1e4 #value of the resistor used to measure the current
+
+    now = datetime.now()
+    # dd/mm/YY H:M:S
+    dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+    print(dt_string)    
+
+    print(f'Stanford Gain V_AC ={stanford_gain_V_ac}')
+    print(f'V_max = {voltages[-1]} V')
+
+    time_constant = station.lockin_2.time_constant()
+
+    print(f'Integration time lockins {time_constant} s')
+
+    station.yoko.output('off')
+    station.yoko.source_mode("VOLT")
+    station.yoko.output('on')
+
+    station.yoko.voltage.step = 1e-3
+    station.yoko.voltage.inter_delay = 10e-3
+    
+    station.lockin_2.amplitude(amplitude)
+
+    meas = Measurement()
+
+    
+    meas.register_parameter(station.yoko.voltage)
+    meas.register_parameter(station.lockin_2.amplitude)
+
+    meas.register_parameter(station.lockin_1.Y, setpoints=(station.yoko.voltage,))
+    meas.register_parameter(station.lockin_2.Y, setpoints=(station.yoko.voltage,))
+    meas.register_parameter(station.lockin_1.X, setpoints=(station.yoko.voltage,))
+    meas.register_parameter(station.lockin_2.X, setpoints=(station.yoko.voltage,))
+    meas.register_custom_parameter("G_ac", unit="S", setpoints=(station.yoko.voltage,))
+    meas.register_custom_parameter("I_dc", unit="A", setpoints=(station.yoko.voltage,))
+
+    print(f'Frequency Lockin : {station.lockin_1.frequency()} Hz')
+
+    station.lockin_2.amplitude(amplitude)
+    print(f'V_ac polarization : {amplitude*1e3} mV')
+
+    print(f'Filter lockin 1 : {station.lockin_1.filter_slope()} dB roll off')
+    print(f'Sensitivity lockin 1 : {station.lockin_1.sensitivity()} V')
+
+    print(f'Filter lockin 2 : {station.lockin_2.filter_slope()} dB roll off')
+    print(f'Sensitivity lockin 2 : {station.lockin_2.sensitivity()} A')
+   
+
+    v_init = voltages[0]
+    v_final = voltages[-1]
+    L = int(len(voltages)/2)
+    volt_sweep_init = np.linspace(0.0, v_init, L)
+    volt_sweep_final = np.linspace(v_final, 0.0, L)
+    
+
+    with meas.run() as datasaver:
+
+        for v in volt_sweep_init:
+
+            station.yoko.voltage(v)
+            
+
+        time.sleep(1)
+
+        for v in voltages:
+
+            station.yoko.voltage(v)
+
+            
+            time.sleep(9*time_constant)
+
+            current_X_AC = station.lockin_2.X()/stanford_gain_I_ac
+            voltage_X_AC = station.lockin_1.X()/stanford_gain_V_ac
+
+            current_Y_AC = station.lockin_2.Y()/stanford_gain_I_ac
+            voltage_Y_AC = station.lockin_1.Y()/stanford_gain_V_ac
+
+            G_ac = current_X_AC/voltage_X_AC
+
+            datasaver.add_result(("G_ac",G_ac),
+                                (station.yoko.voltage, v),
+                                (station.lockin_1.Y,current_Y_AC),
+                                (station.lockin_2.Y,voltage_Y_AC),
+                                (station.lockin_1.X,current_X_AC),
+                                (station.lockin_2.X,voltage_X_AC))
+
+        for v in volt_sweep_final:
+
+            station.yoko.voltage(v)
+
+        ID_exp = datasaver.run_id
+
+    station.yoko.voltage(0)
+    plot_by_id(ID_exp)
+
+def GV_IV_up(station, voltages, amplitude, stanford_gain_V_ac, stanford_gain_I, stanford_gain_V):
 
     R_I = 1e4 #value of the resistor used to measure the current
 
