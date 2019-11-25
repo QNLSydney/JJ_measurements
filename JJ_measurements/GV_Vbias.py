@@ -38,7 +38,6 @@ def GV_yoko_up(station, voltages, amplitude, stanford_gain_V_ac, stanford_gain_I
 
     meas = Measurement()
 
-    
     meas.register_parameter(station.yoko.voltage)
     meas.register_parameter(station.lockin_2.amplitude)
 
