@@ -300,7 +300,7 @@ def RT_LT(station, voltage, stanford_gain_V, stanford_gain_I):
     station.yoko.voltage(0)
 
 
-def RT_HT_ithaco(station, voltage, stanford_gain_V, gain_ithaco):
+def RT_LT_ithaco(station, voltage, stanford_gain_V, gain_ithaco):
 
     station.dmm1.NPLC(10)
     station.dmm2.NPLC(10)
@@ -345,7 +345,7 @@ def RT_HT_ithaco(station, voltage, stanford_gain_V, gain_ithaco):
 
     with meas.run() as datasaver:
         
-        while T > 4.0:
+        while T  >0.008:
             T = station.BlueFors_LD.MC_temp() 
 
             station.yoko.voltage(voltage)
@@ -388,7 +388,7 @@ def RT_HT_ithaco(station, voltage, stanford_gain_V, gain_ithaco):
                 r_array[array_size//2:] = np.nan
             
             #print((T,R_av))
-            time.sleep(60)
+            time.sleep(2)
             j = j+1
             
     station.yoko.voltage(0)
