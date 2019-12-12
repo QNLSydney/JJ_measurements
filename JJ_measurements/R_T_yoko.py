@@ -36,7 +36,7 @@ def RT_HT(station, voltage, stanford_gain_V, stanford_gain_I):
     meas.register_custom_parameter("Current", unit = "A")
     meas.register_parameter(station.dmm1.volt)
     meas.register_parameter(station.dmm2.volt)
-    meas.register_custom_parameter("Resistance", unit = "Ohms", setpoints=("Temperature",))
+    meas.register_custom_parameter("Resistance", unit = "Ohms", setpoints=(station.BlueFors_LD.Four_K_temp,))
     
     win = qcm.pyplot.PlotWindow(title="R(T)")
     win.resize(750,500)
@@ -85,7 +85,7 @@ def RT_HT(station, voltage, stanford_gain_V, stanford_gain_I):
             R_av = V_av/I_av
 
             datasaver.add_result((station.yoko.voltage, voltage),
-                                ("Temperature", T),
+                                (station.BlueFors_LD.Four_K_temp, T),
                                 ("Counter", j),
                                  ("Resistance", R_av),
                                 (station.dmm1.volt,V_av),
@@ -294,7 +294,7 @@ def RT_LT(station, voltage, stanford_gain_V, stanford_gain_I):
             
             
             #print((T,R_av))
-            time.sleep(60)
+            time.sleep(1)
             j = j+1
             
     station.yoko.voltage(0)

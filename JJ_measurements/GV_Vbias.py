@@ -243,8 +243,8 @@ def GV_IV_yoko_up(station, voltages, amplitude, stanford_gain_V_ac, stanford_gai
     print(dt_string)    
 
     print(f'Stanford Gain V_AC ={stanford_gain_V_ac}')
-    print(f'Stanford Gain I_DC ={stanford_gain_I}')
     print(f'Stanford Gain V_DC ={stanford_gain_V}')
+    print(f'Stanford Gain I ={stanford_gain_I}')
     print(f'V_max = {voltages[-1]} V')
 
     int_time = 1 #Integration time of the dmm's
@@ -317,7 +317,7 @@ def GV_IV_yoko_up(station, voltages, amplitude, stanford_gain_V_ac, stanford_gai
             station.yoko.voltage(v)
             time.sleep(100e-3)
 
-        time.sleep(10)
+        time.sleep(1)
 
         for v in voltages:
 
@@ -329,7 +329,7 @@ def GV_IV_yoko_up(station, voltages, amplitude, stanford_gain_V_ac, stanford_gai
 
             #i_dc = v_i_dc/R_I
 
-            time.sleep(9*time_constant)
+            time.sleep(6*time_constant)
 
             current_X_AC = station.lockin_2.X()/stanford_gain_I
             voltage_X_AC = station.lockin_1.X()/stanford_gain_V_ac
@@ -341,7 +341,7 @@ def GV_IV_yoko_up(station, voltages, amplitude, stanford_gain_V_ac, stanford_gai
 
             datasaver.add_result(("G_ac",G_ac),
                                 (station.dmm1.volt, v_dc),
-                                (station.dmm2.volt, v_i_dc),
+                                (station.dmm2.volt, i_dc),
                                 ("I_dc",i_dc),
                                 (station.yoko.voltage, v),
                                 (station.lockin_1.Y,current_Y_AC),
