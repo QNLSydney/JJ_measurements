@@ -88,7 +88,7 @@ def IV_gate_sweep(station, voltages, v_gates, stanford_gain_V, stanford_gain_I):
 
 	print(f'Integration time = {int_time*0.02} s')
 
-	print(f'v_gate from {v_gates[0]} to {v_gates[-1]} with {len(v_gates)} points')
+	print(f'v_gate from {v_gates[0]}V to {v_gates[-1]}V with {len(v_gates)} points')
 
 	station.yoko.output('off') 
 	station.yoko.source_mode("VOLT") 
@@ -109,13 +109,12 @@ def IV_gate_sweep(station, voltages, v_gates, stanford_gain_V, stanford_gain_I):
 
 	    ID_exp = datasaver.run_id
 	    for i, v_g in enumerate(v_gates):
+	    	print(f'v_g = {v_g}V')
+
 	    	station.mdac_8.ch01.ramp(v_g, 0.01)
-            station.mdac_8.ch02.ramp(v_g, 0.01)
-
-            station.mdac_8.ch01.block()
-            station.mdac_8.ch02.block()
-  
-
+	    	station.mdac_8.ch02.ramp(v_g, 0.01)
+	    	station.mdac_8.ch01.block()
+	    	station.mdac_8.ch02.block()
 	    	for v in voltages:
 
 	       		station.yoko.voltage(v)
